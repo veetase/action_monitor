@@ -3,7 +3,7 @@ require 'action_monitor/tracker'
 module ActionMonitor
   PRODUCER_TYPE_FILE = 'file'.freeze
 
-  SETTINGS = Settings.try(:action_monitor)
+  SETTINGS = ::Settings.try(:action_monitor)
   CONFIG = {
     app_name: SETTINGS.try(:app_name) || Rails.application.class.to_s,
     log_path: SETTINGS.try(:log_path) || 'log/monitor.log',
