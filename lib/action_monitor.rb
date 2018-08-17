@@ -1,4 +1,4 @@
-require 'action_monitor/producer'
+require 'action_monitor/producer/logger'
 require 'action_monitor/tracker'
 module ActionMonitor
   PRODUCER_TYPE_FILE = 'file'.freeze

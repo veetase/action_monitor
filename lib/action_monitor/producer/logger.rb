@@ -1,3 +1,4 @@
+require 'action_monitor/producer'
 module ActionMonitor
   class Logger < ActionMonitor::Producer
     def initialize

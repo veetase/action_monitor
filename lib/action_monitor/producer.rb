@@ -1,4 +1,3 @@
-require 'producer/logger'
 module ActionMonitor
   class Producer
     def self.allocate
