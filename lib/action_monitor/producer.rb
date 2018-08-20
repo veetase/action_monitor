@@ -1,8 +1,8 @@
 module ActionMonitor
   class Producer
     def self.allocate
-      case ActionMonitor::CONFIG[:producer_type]
-      when PRODUCER_TYPE_FILE
+      case ActionMonitor.configuration.producer_type
+      when 'file'
         return ActionMonitor::Logger.new
       end
     end

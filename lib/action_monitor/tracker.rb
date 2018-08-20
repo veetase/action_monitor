@@ -46,7 +46,7 @@ module ActionMonitor
 
     def track_client_id
       return @track_client_id if @track_client_id
-      current_user_identfier = CONFIG[:current_user_identfier]
+      current_user_identfier = ActionMonitor.configuration.current_user_identfier
       @track_client_id = current_user_identfier ? eval(current_user_identfier) : try(:current_user).try(:id)
     end
 
@@ -55,12 +55,13 @@ module ActionMonitor
     end
 
     def resource_id
-      @track_resource_id ||= try(CONFIG[:resource_identfier].try(:to_sym))
+      @track_resource_id ||= try(ActionMonitor.configuration.resource_identfier.try(:to_sym))
     end
 
     def produce(meta_data)
       data = meta_data.merge(resource_id: resource_id)
-      producer.output(self.class, track_client_id, data)
+      app_name = ActionMonitor.configuration.app_name || Rails.application.class
+      producer.output("#{app_name}_#{self.class}", track_client_id, data)
     end
   end
 end

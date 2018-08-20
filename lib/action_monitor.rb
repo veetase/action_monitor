@@ -1,16 +1,18 @@
 require 'action_monitor/producer/logger'
 require 'action_monitor/tracker'
+require 'action_monitor/configuration'
 module ActionMonitor
-  PRODUCER_TYPE_FILE = 'file'.freeze
+  class << self
+    attr_writer :configuration
+  end
 
-  SETTINGS = ::Settings.try(:action_monitor)
-  CONFIG = {
-    app_name: SETTINGS.try(:app_name) || Rails.application.class.to_s,
-    log_path: SETTINGS.try(:log_path) || 'log/monitor.log',
-    producer_type: SETTINGS.try(:producer_type) || PRODUCER_TYPE_FILE,
-    current_user_identfier: SETTINGS.try(:current_user_identfier),
-    resource_identfier: SETTINGS.try(:resource_identfier) || 'id'
-  }.freeze
+  def self.configuration
+    @configuration ||= Configuration.new
+  end
+
+  def self.configure
+    yield(configuration)
+  end
 end
 
 ActiveSupport.on_load :active_record do
