@@ -4,7 +4,11 @@ module ActionMonitor
     class_methods do
       # params:
       #   actions(Array): 动作的类型，只支持[:create, :delete, update: []],
+      #   如 track :create, :delete, :update 记录插入，删除，更新事件
+      #   如 track :create, :delete, update: :price，记录插入，删除，指定行的更新事件
       #   如 track [:create, :delete, update: [:price, :publish_at]
+      #   如 track [:create, :delete, update: {only: [:publish_at, :price]}
+      #   如 track [:create, :delete, update: {except: :updated_at}
       def track(*actions)
         actions.each do |action|
           if action.is_a?(Symbol) || action.is_a?(String)
@@ -13,10 +17,12 @@ module ActionMonitor
               after_create -> { track_action('create') }
             when 'destroy'
               after_destroy -> { track_action('destroy') }
+            when 'update'
+              after_update -> { track_action('update') }
             end
           elsif action.is_a?(Hash) && action.keys.map(&:to_s) == ['update']
-            columns = action.values.flatten
-            after_save do
+            columns = get_columns_to_track(action.values.first)
+            after_update do
               columns.each do |column|
                 track_action_update(column.to_s, try("#{column}_was"), try(column))
               end
@@ -25,6 +31,23 @@ module ActionMonitor
         end
       rescue StandardError => e
         puts e.inspect
+      end
+
+      def get_columns_to_track(obj)
+        columns = column_names.map(&:to_sym)
+        columns_to_track = if obj.is_a? Hash
+                             if obj[:only].present?
+                               Array(obj[:only])
+                             elsif obj[:except].present?
+                               columns - Array(obj[:except])
+                             else
+                               []
+                             end
+                           else
+                             Array(obj)
+                           end
+
+        columns & columns_to_track
       end
     end
 
