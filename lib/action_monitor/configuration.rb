@@ -7,7 +7,7 @@ module ActionMonitor
       # default configurations
       @log_path = 'log/action_monitor.log'
       @producer_type = 'file'
-      @resource_identfier = 'id'
+      @resource_identfier = 'tracking_resource_identfier'
     end
   end
 end

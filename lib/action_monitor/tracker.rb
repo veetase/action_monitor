@@ -78,7 +78,12 @@ module ActionMonitor
     end
 
     def resource_id
-      @track_resource_id ||= try(ActionMonitor.configuration.resource_identfier.try(:to_sym))
+      return @track_resource_id if @track_resource_id
+
+      resource_identfier = ActionMonitor.configuration.resource_identfier.try(:to_sym)
+      identfier = try(resource_identfier).try(:to_sym) || :id
+
+      @track_resource_id = try(identfier)
     end
 
     def produce(meta_data)
